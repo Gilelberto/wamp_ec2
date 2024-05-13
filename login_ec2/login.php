@@ -27,27 +27,28 @@
         text-align: center;
     }
     h1 {
-        color: #724d82;
+        color: #ffffff;
     }
     .container {
-        width: 50%;
+        width: 25%;
         margin: auto;
-        padding: 20px;
+        padding: 50px;
         background-color: #fff;
         border-radius: 5px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        margin-top: 20px;
+        margin-top: 50px;
         margin-bottom: 20px;
     }
-    input[type="text"], input[type="email"], textarea {
+    input[type="text"], input[type="email"], input[type="password"], textarea {
         width: 100%;
         padding: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         border: 1px solid #ccc;
         border-radius: 5px;
         box-sizing: border-box;
     }
     input[type="submit"] {
+        width: 100%;
         background-color: #724d82;
         color: #fff;
         padding: 10px 20px;
@@ -75,9 +76,12 @@
 </header>
 <div class="container">
     <form action="login-middleware.php" method="post">
-        <label for="campo1">correo:</label>
+        <label for="campo1">Correo:</label>
+        <br>
         <input type="text" id="campo1" name="email" required="true">
-        <label for="campo2">contraseña:</label>
+        <br>
+        <label for="campo2">Contraseña:</label>
+        <br>
         <input type="password" id="campo2" name="password" required="true">
         <br>
         <input type="submit" value="Enviar">
@@ -85,7 +89,7 @@
     
     <?php 
         if(isset($_COOKIE["credentials_error"])){
-            echo "<p>Usurio y/o contraseña incorrectos.</p>";
+            echo "<p>Usuario y/o contraseña incorrectos.</p>";
         }
     ?>
 </div>
