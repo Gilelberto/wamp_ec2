@@ -1,6 +1,7 @@
 <?php 
     if(isset($_COOKIE["usuario"])){
         header("Location: welcome.php");
+        exit();
     }
 
 ?>
