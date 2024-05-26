@@ -1,4 +1,6 @@
 <?php 
+require_once 'config.php';
+require_once 'check_session.php';
 
 $conexion = mysqli_connect("localhost", "root", "", "final_db");
 if (!$conexion) {

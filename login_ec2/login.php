@@ -1,8 +1,10 @@
 <?php 
-    if(isset($_COOKIE["usuario"])){
+    session_start();
+    if(isset($_SESSION["usr_id"])){
         header("Location: welcome.php");
         exit();
     }
+   // session_destroy();
 
 ?>
 

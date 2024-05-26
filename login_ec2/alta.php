@@ -1,5 +1,8 @@
 <?php 
 
+require_once 'config.php';
+require_once 'check_session.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = $_POST['nombre'];
     $nacionalidad = $_POST['nacionalidad'];
