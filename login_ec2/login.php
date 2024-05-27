@@ -14,7 +14,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Formulario con Estilos</title>
+<title>Log In</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -75,9 +75,16 @@
 </head>
 <body>
 <header>
-    <h1>Formulario de Contacto</h1>
+    <h1>Formulario de inicio de sesión</h1>
 </header>
 <div class="container">
+    <?php 
+        if(isset($_COOKIE["register_ok"])){
+            echo "<p>Registro exitoso.</p>";
+        }
+    ?>
+
+
     <form action="login-middleware.php" method="post">
         <label for="campo1">Correo:</label>
         <br>
@@ -89,6 +96,7 @@
         <br>
         <input type="submit" value="Enviar">
     </form>
+    <p>¿No tienes cuenta? <a href="register.php">Regístrate</a></p>
     
     <?php 
         if(isset($_COOKIE["credentials_error"])){

@@ -22,34 +22,23 @@ $query->execute();
 $resultado = $query->get_result();
 $registro = $resultado->fetch_assoc();
 
-if ($registro && $password == $registro["password"]) {
+
+//OBTENER PASSWORD HASHEADO
+
+$options = [
+    'cost' => 12
+];
+$final_password = password_hash($password,PASSWORD_BCRYPT,$options);
+
+
+if ($resultado->num_rows > 0 && password_verify($password,$registro["password"])) {
     // Autenticación exitosa
     session_start();
-    // ******REGRESARLA A SU TIEMPO DE 30 MINUTOS UNA VEZ TERMINADO EL PROYECTO******
-    //$session_lifetime = 60 * 30;
-
-    //$session_lifetime = 60 * 3;
-
-    //$session_lifetime =  5;
-
-    // Configurar el tiempo de vida de la sesión
-    //ini_set('session.gc_maxlifetime', $session_lifetime);
-    //ini_set('session.cookie_lifetime', $session_lifetime);
-
-    
-
-    // Configurar el tiempo de vida de la cookie de sesión
-    //setcookie(session_name(), session_id(), time() + $session_lifetime);
-   // setcookie("usuario", $registro["user_name"],time() + $session_lifetime, "/");
-
     $_SESSION['usr_id'] = $registro['user_id'];
-
-    //$cookie_expire_date = time() + 60;
     header("Location: welcome.php");
     exit();
 
 } else {
-    // Credenciales incorrectas
     $cookie_expire_date = time() + 5;
     setcookie("credentials_error", "true", $cookie_expire_date, "/");
     header("Location: login.php");

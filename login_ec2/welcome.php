@@ -79,6 +79,11 @@
         <a href="consultas.php">Consultas</a>
         <a href="descargas.php">Descargas</a>
     </div>
+    <br>
+    <div class="button-container">
+        <a href="close_session.php">Cerrar sesión</a>
+    </div>
+    
 </div>
 <footer>
     <h2>Menú</h2>
