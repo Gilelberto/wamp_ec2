@@ -11,18 +11,34 @@ $query = "SELECT * FROM pilotos_f1";
 $result = mysqli_query($conexion, $query);
 $pilotos = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['id'])) {
-        $id = intval($_POST['id']);
-        $query = "SELECT * FROM pilotos_f1 WHERE id=$id";
-        $result = mysqli_query($conexion, $query);
-        if ($result) {
-            $piloto = mysqli_fetch_assoc($result);
-        } else {
-            echo "Error en la consulta: " . mysqli_error($conexion);
-        }
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
+    $query = "SELECT * FROM pilotos_f1 WHERE id=$id";
+    $result = mysqli_query($conexion, $query);
+    if ($result) {
+        $piloto = mysqli_fetch_assoc($result);
+        echo json_encode($piloto);
+    } else {
+        echo json_encode(["error" => "Error en la consulta: " . mysqli_error($conexion)]);
     }
+    exit;
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
+    $id = $_POST['id'];
+    $query = $conexion->prepare("DELETE FROM pilotos_f1 WHERE id=?");
+    $query->bind_param('i', $id);
+    if ($query->execute()) {
+        $success_message = "El piloto ha sido eliminado exitosamente.";
+    } else {
+        $error_message = "Hubo un error al eliminar el piloto. Inténtelo nuevamente.";
+    }
+    $query->close();
+    header("Location: consultas.php");
+    exit();
+}
+
+mysqli_close($conexion);
 ?>
 
 <!DOCTYPE html>
@@ -95,7 +111,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .back-button:hover {
         background-color: #563d62;
     }
+    button.delete {
+        background-color: #d9534f;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    button.delete:hover {
+        background-color: #c9302c;
+    }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const pilotoSelect = document.getElementById('piloto');
+    const infoDiv = document.querySelector('.info');
+
+    pilotoSelect.addEventListener('change', function() {
+        const id = pilotoSelect.value;
+        if (id) {
+            fetch(`consultas.php?id=${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        infoDiv.innerHTML = `
+                            <p>Nombre: ${data.nombre}</p>
+                            <p>Nacionalidad: ${data.nacionalidad}</p>
+                            <p>Equipo Actual: ${data.equipo_actual}</p>
+                            <p>Número de Coche: ${data.numero_coche}</p>
+                            <p>Número de Victorias: ${data.numero_victorias}</p>
+                            <p>Número de Podios: ${data.numero_podios}</p>
+                            <p>Número de Carreras Disputadas: ${data.numero_carreras_disputadas}</p>
+                            <p>Títulos de Campeonato: ${data.titulos_campeonato}</p>
+                        `;
+                        document.getElementById('id_eliminar').value = id;
+                    }
+                });
+        }
+    });
+});
+</script>
 </head>
 <body>
 <header>
@@ -106,6 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form action="consultas.php" method="post">
         <label for="piloto">Seleccione un Piloto:</label>
         <select id="piloto" name="id" required>
+            <option value="">Seleccione un piloto</option>
             <?php foreach ($pilotos as $piloto): ?>
                 <option value="<?php echo $piloto['id']; ?>"><?php echo $piloto['nombre']; ?></option>
             <?php endforeach; ?>
@@ -113,19 +173,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="submit" value="Consultar">
     </form>
 
-    <?php if(isset($piloto)): ?>
-        <div class="info">
-            <p>Nombre: <?php echo $piloto['nombre']; ?></p>
-            <p>Nacionalidad: <?php echo $piloto['nacionalidad']; ?></p>
-            <p>Equipo Actual: <?php echo $piloto['equipo_actual']; ?></p>
-            <p>Número de Coche: <?php echo $piloto['numero_coche']; ?></p>
-            <p>Número de Victorias: <?php echo $piloto['numero_victorias']; ?></p>
-            <p>Número de Podios: <?php echo $piloto['numero_podios']; ?></p>
-            <p>Número de Carreras Disputadas: <?php echo $piloto['numero_carreras_disputadas']; ?></p>
-            <p>Títulos de Campeonato: <?php echo $piloto['titulos_campeonato']; ?></p>
-        </div>
-    <?php endif; ?>
+    <div class="info"></div>
+
+    <form action="consultas.php" method="post">
+        <input type="hidden" name="id" id="id_eliminar">
+        <button type="submit" name="delete" class="delete">Eliminar Piloto</button>
+    </form>
+
+    <?php 
+    if (isset($error_message)) {
+        echo "<div class='message error'>$error_message</div>";
+    } elseif (isset($success_message)) {
+        echo "<div class='message success'>$success_message</div>";
+    }
+    ?>
 </div>
 </body>
 </html>
-
